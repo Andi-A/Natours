@@ -4,6 +4,8 @@ const tourController = require('./../controllers/tourController');
 const fs = require('fs');
 
 const router = express.Router(); // Create new Router
+// Creating  Param MiddleWare
+router.param('id', tourController.checkID);
 
 router
   .route('/')
