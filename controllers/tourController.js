@@ -4,7 +4,24 @@ const Tour = require('../models/tourModel');
 // Route Handlers
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find(); // Return all data from tour collection
+    // BUILD QUERY
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]); // Exlcude parameter like page,sort,limit,fields
+    console.log(req.query, queryObj);
+
+    const query = Tour.find(queryObj); // Return  data from tour collection
+
+    // const tours =  Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+    // Execute QUERY
+    const tours = await query;
+
+    // SEND RESPONSE
 
     res.status(200).json({
       status: 'success',
@@ -52,7 +69,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent!',
+      message: err,
     });
   }
 };
