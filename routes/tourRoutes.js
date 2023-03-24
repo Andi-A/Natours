@@ -1,8 +1,9 @@
+/* eslint-disable import/no-useless-path-segments */
 const express = require('express');
-const tourController = require('../controllers/tourController');
+const tourController = require('./../controllers/tourController');
 
-const router = express.Router(); // Create new Router
-// Creating  Param MiddleWare
+const router = express.Router();
+
 // router.param('id', tourController.checkID);
 
 router
@@ -22,6 +23,5 @@ router
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
-// Mounting the router
 
 module.exports = router;

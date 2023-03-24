@@ -25,7 +25,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 
 app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404)); // TRis jumps to the error middleware down below
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404)); // This jumps to the error middleware down below
 });
 
 app.use(globalErrorHandler);

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
-
-const validator = require('validator');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -13,7 +11,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
       minlength: [10, 'A tour name must have more or equal then 10 characters'],
-      validate: [validator.isAlpha, 'Tour name must only contain characters'],
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
     slug: String,
     duration: {
@@ -51,7 +49,6 @@ const tourSchema = new mongoose.Schema(
       validate: {
         validator: function (val) {
           // this only points to current doc on NEW document creation
-          // this only point to current doc on NEW document creation, not on UPDATE
           return val < this.price;
         },
         message: 'Discount price ({VALUE}) should be below regular price',
@@ -87,27 +84,38 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
 tourSchema.virtual('durationWeeks').get(function () {
-  return this.duration / 7; // an arrow function does not have this
+  return this.duration / 7;
 });
 
-// DOCUMENT middleware , it runs before a data is saved, runs only before .save() and .create()
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
-  next(); // Call next middleware in the stack
-});
-
-//tourSchema.pre('find', function (next) {
-tourSchema.pre(/^find/, function (next) {
-  // find hook
-  this.start = Date.now();
-  this.find({ secretTour: { $ne: true } });
   next();
 });
-// It runs after the query is executed
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took ${Date.now() - this.start} milliseconds`);
 
+// tourSchema.pre('save', function(next) {
+//   console.log('Will save document...');
+//   next();
+// });
+
+// tourSchema.post('save', function(doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+// QUERY MIDDLEWARE
+// tourSchema.pre('find', function(next) {
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
